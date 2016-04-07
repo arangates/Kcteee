@@ -95,9 +95,11 @@
           <div class="content">
             <iron-pages attr-for-selected="data-route" selected="{{route}}">
               <section data-route="dashboard">
-              <paper-material id="voltage"></paper-material>
-<paper-material id="current"></paper-material>
-<paper-material id="speed"></paper-material>
+              <paper-material elevation="1">
+              <div id="voltage"></div>
+<div id="current"></div>
+<div id="speed"></div>
+</paper-material>
 <script>
 var pubnub = PUBNUB.init({
       publish_key: 'pub-c-3588af66-9bbd-4984-b578-27f5877f17db',
