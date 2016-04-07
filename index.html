@@ -5,8 +5,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Third Eye">
-    <title>Motor monitoring
-    </title>
+    <title>Motor monitoring</title>
     <meta name="theme-color" content="#0097A7">
     <link rel="manifest" href="manifest.json">
     <meta name="msapplication-TileColor" content="#3372DF">
@@ -19,11 +18,9 @@
     <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
     <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
     <link rel="stylesheet" href="styles/main.css">
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js">
-    </script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"> </script>
     <link rel="import" href="elements/elements.vulcanized.html">
-    <style is="custom-style" include="shared-styles">
-    </style>
+    <style is="custom-style" include="shared-styles"></style>
   </head>
   <body unresolved="" class="fullbleed layout vertical">
     <span id="browser-sync-binding">
@@ -98,6 +95,120 @@
           <div class="content">
             <iron-pages attr-for-selected="data-route" selected="{{route}}">
               <section data-route="dashboard">
+              <div id="voltage"></div>
+<div id="current"></div>
+<div id="speed"></div>
+<script>
+var pubnub = PUBNUB.init({
+      publish_key: 'pub-c-3588af66-9bbd-4984-b578-27f5877f17db',
+      subscribe_key: 'sub-c-598e4d8e-e9e4-11e4-91d3-0619f8945a4f'
+      });
+      var channel = "Kcteee";
+
+eon.chart({
+  channel: channel,
+  generate: {
+    bindto: '#speed',
+    data: {
+      type: 'gauge',
+    },
+    gauge: {
+      min: 0,
+      max: 100
+    },
+    color: {
+      pattern: ['#FF0000', '#F6C600', '#60B044'],
+      threshold: {
+        values: [30, 60, 90]
+      }
+    }
+  },
+          transform: function(a) {
+          return {
+            eon: {
+              'speed': a[6],
+            }
+          };
+        }
+}); 
+// current     
+ eon.chart({
+        channel: channel,
+        history: true,
+        flow: true,
+        pubnub: pubnub,
+        debug: true,
+
+        generate: {
+          bindto: '#current',
+          data: {
+            labels: true,
+            
+          }
+        },
+
+        transform: function(a) {
+          return {
+            eon: {
+              'c-1': a[3],
+              'c-2': a[4],
+              'c-3': a[5]
+              }
+          };
+        }
+      });
+ // voltage
+      eon.chart({
+        channel: channel,
+        history: true,
+        flow: true,
+        pubnub: pubnub,
+        debug: true,
+
+        generate: {
+          bindto: '#voltage',
+          data: {
+            labels: false,
+            type:'bar'
+          }
+        },
+
+        transform: function(a) {
+          return {
+            eon: {
+              'v-1': a[0],
+              'v-2': a[1],
+              'v-3': a[2],
+              
+            }
+          };
+        }
+      });
+(function() {
+  var sensors = "http://api.thingspeak.com/channels/18675/feed/last.json";
+  $.getJSON( sensors, {
+    format: "json"
+  })
+    .done(function( data ) {
+        setInterval(function(){ 
+        var f1=data.field1;
+        var f2=data.field2;
+        var f3=data.field3;
+        var f4=data.field4;
+        var f5=data.field5;
+        var f6=data.field6;
+        var f7=data.field7;
+        // var f8=data.field8;
+        console.log(f1,f2,f3,f4,f5,f6,f7);  
+        pubnub.publish({
+          channel: channel,
+          message: [f1,f2,f3,f4,f5,f6,f7]
+     });
+        }, 15000);
+    });
+})();
+</script>
+ 
                 <!-- <paper-material elevation="1" class="paper-font-body2">
                   <p>
                     <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/4?width=480&height=250&results=10&dynamic=true&yaxis=Voltage(Volts)&xaxis=Time%20&title=Voltage%20">
@@ -229,7 +340,9 @@
         </span>
       </paper-toast>
     </template>
-    <script src="scripts/app.js">
-    </script>
+    <script src="scripts/app.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script type="text/javascript" src="http://pubnub.github.io/eon/v/eon/0.0.10/eon.js"></script>
+<link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/v/eon/0.0.10/eon.css">
   </body>
 </html>
