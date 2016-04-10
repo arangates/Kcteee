@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable = yes" >
+    <meta name="generator" content="Third Eye">
+    <title>Motor monitoring</title>
+    <meta name="theme-color" content="#0097A7">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PSK">
+    <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Third Eye">
+    <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"> </script>
+    <link rel="import" href="elements/elements.vulcanized.html">
+    <style is="custom-style" include="shared-styles"></style>
+  </head>
+  <body unresolved="" class="fullbleed layout vertical">
+    <span id="browser-sync-binding">
+    </span>
+    <template is="dom-bind" id="app">
+      <paper-drawer-panel id="paperDrawerPanel" responsive-width="700px">
+        <paper-scroll-header-panel drawer="" fixed="">
+          <paper-toolbar id="drawerToolbar">
+            <span class="paper-font-title">Menu
+            </span>
+          </paper-toolbar>
+          <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+            <a data-route="dashboard" href="{{baseUrl}}">
+              <iron-icon icon="dns">
+              </iron-icon>
+              <span>Dashboard
+              </span>
+            </a> 
+            <a data-route="voltage" href="{{baseUrl}}voltage">
+              <iron-icon icon="filter-list">
+              </iron-icon>
+              <span>Voltage
+              </span>
+            </a> 
+            <a data-route="current" href="{{baseUrl}}current">
+              <iron-icon icon="receipt">
+              </iron-icon>
+              <span>Current
+              </span>
+            </a> 
+            <a data-route="speed" href="{{baseUrl}}speed">
+              <iron-icon icon="track-changes">
+              </iron-icon>
+              <span>Speed
+              </span>
+            </a> 
+            <a data-route="temperature" href="{{baseUrl}}temperature">
+              <iron-icon icon="settings-remote">
+              </iron-icon>
+              <span>Temperature
+              </span>
+            </a> 
+            <a data-route="twitter" href="{{baseUrl}}twitter">
+              <iron-icon icon="cloud">
+              </iron-icon>
+              <span>Tweets
+              </span>
+            </a> 
+             <a href="http://arangates.github.io/Kcteee/free.html" class="button">
+            <!-- <a data-route="control" href="www.google.com"> -->
+              <iron-icon icon="build">
+              </iron-icon>
+              <span>Freeboard
+              </span>
+            </a>
+            <a data-route="control" href="{{baseUrl}}control">
+              <iron-icon icon="build">
+              </iron-icon>
+              <span>Controls
+              </span>
+            </a>
+            <paper-icon-button 
+          </paper-menu>
+        </paper-scroll-header-panel>
+        <paper-scroll-header-panel main="" id="headerPanelMain" condenses="" no-reveal="" no-dissolve="">
+          <paper-toolbar id="mainToolbar" class="scroll">
+            <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle="">
+            </paper-icon-button>
+            <span class="flex">
+            </span>
+            <paper-icon-button icon="refresh">
+            </paper-icon-button>
+            <paper-icon-button icon="search">
+            </paper-icon-button>
+            <div class="middle middle-container center horizontal layout">
+              <div class="app-name">Motor Monitoring
+              </div>
+            </div>
+          </paper-toolbar>
+          <div class="content">
+            <iron-pages attr-for-selected="data-route" selected="{{route}}">
+              <section data-route="dashboard">
+              <paper-material elevation="1">
+                <p>Voltage</p>
+              <div id="voltage"></div>
+              </paper-material>
+              <paper-material elevation="1">
+              <p>Current</p>
+<div id="current"></div></paper-material>
+<paper-material elevation="1">
+<p>Speed</p>
+<div id="speed"></div>
+</paper-material>
+<script>
+var pubnub = PUBNUB.init({
+      publish_key: 'pub-c-3588af66-9bbd-4984-b578-27f5877f17db',
+      subscribe_key: 'sub-c-598e4d8e-e9e4-11e4-91d3-0619f8945a4f'
+      });
+      var channel = "Kcteee";
+
+eon.chart({
+  channel: channel,
+  generate: {
+    bindto: '#speed',
+    data: {
+      type: 'gauge',
+    },
+    gauge: {
+      min: 0,
+      max: 100
+    },
+    color: {
+      pattern: ['#FF0000', '#F6C600', '#60B044'],
+      threshold: {
+        values: [30, 60, 90]
+      }
+    }
+  },
+          transform: function(a) {
+          return {
+            eon: {
+              'speed': a[6],
+            }
+          };
+        }
+}); 
+// current     
+ eon.chart({
+        channel: channel,
+        history: true,
+        flow: true,
+        pubnub: pubnub,
+        debug: true,
+
+        generate: {
+          bindto: '#current',
+          data: {
+            labels: true,
+            
+          }
+        },
+
+        transform: function(a) {
+          return {
+            eon: {
+              'c-1': a[3],
+              'c-2': a[4],
+              'c-3': a[5]
+              }
+          };
+        }
+      });
+ // voltage
+      eon.chart({
+        channel: channel,
+        history: true,
+        flow: true,
+        pubnub: pubnub,
+        debug: true,
+
+        generate: {
+          bindto: '#voltage',
+          data: {
+            labels: false,
+            type:'bar'
+          }
+        },
+
+        transform: function(a) {
+          return {
+            eon: {
+              'v-1': a[0],
+              'v-2': a[1],
+              'v-3': a[2],
+              
+            }
+          };
+        }
+      });
+(function() {
+  var sensors = "http://api.thingspeak.com/channels/18675/feed/last.json";
+  $.getJSON( sensors, {
+    format: "json"
+  })
+    .done(function( data ) {
+        setInterval(function(){ 
+        var f1=data.field1;
+        var f2=data.field2;
+        var f3=data.field3;
+        var f4=data.field4;
+        var f5=data.field5;
+        var f6=data.field6;
+        var f7=data.field7;
+        // var f8=data.field8;
+        console.log(f1,f2,f3,f4,f5,f6,f7);  
+        pubnub.publish({
+          channel: channel,
+          message: [f1,f2,f3,f4,f5,f6,f7]
+     });
+        }, 15000);
+    });
+})();
+</script>
+ 
+                <!-- <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/4?width=480&height=250&results=10&dynamic=true&yaxis=Voltage(Volts)&xaxis=Time%20&title=Voltage%20">
+                    </iframe>
+                  </p>
+                </paper-material>
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/5?width=480&height=250&results=10&dynamic=true&yaxis=current(amps)&xaxis=Time&title=Current">
+                    </iframe>
+                  </p>
+                </paper-material>
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/6?width=480&height=250&results=10&dynamic=true&yaxis=speed(RPM)&xaxis=Time&title=Speed">
+                    </iframe>
+                  </p>
+                </paper-material>
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/7?width=480&height=250&results=10&dynamic=true&yaxis=Temperature(*c)&xaxis=Time&title=Temperature">
+                    </iframe>
+                  </p> -->
+                </paper-material>
+              </section>
+              <section data-route="voltage">
+                <paper-material elevation="1">
+                <p>
+                  <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=v-1&type=line&yaxis=voltage"></iframe>
+                </p>
+                 </paper-material>
+
+                 <paper-material elevation="1">
+                <p>
+                  <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=v-2&type=line&yaxis=voltage"></iframe>
+                </p>
+                 </paper-material>
+
+                 <paper-material elevation="1">
+                <p>
+                  <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&title=v-3&type=line&yaxis=voltage"></iframe>
+                </p>
+                 </paper-material>
+                  <!-- <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://api.thingspeak.com/channels/18675/charts/4?width=480&height=250&results=10&dynamic=true&yaxis=Voltage(Volts)&xaxis=Time%20&title=Voltage%20">
+                    </iframe>
+                  </p> -->
+                </paper-material>
+              </section>
+              <section data-route="current">
+                <paper-material elevation="1">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/4?dynamic=true&results=10&title=c-1&type=line&xaxis=Time+&yaxis=current"></iframe>
+                  </p>
+                </paper-material>
+                <paper-material elevation="1">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/5?dynamic=true&results=10&title=c-2&type=line&xaxis=Time+&yaxis=current"></iframe>
+                  </p>
+                </paper-material>
+                <paper-material elevation="1">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/6?dynamic=true&results=10&title=c-3&type=line&xaxis=Time+&yaxis=current"></iframe>
+                  </p>
+                </paper-material>
+              </section>
+              <section data-route="speed">
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/7?color=purple&dynamic=true&results=10&title=speed&type=line&xaxis=Time&yaxis=Speed%28RPM%29"></iframe>
+                  </p>
+                </paper-material>
+              </section>
+              <section data-route="temperature">
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                   <iframe width="480" height="250" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/18675/charts/8?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=line"></iframe>
+                  </p>
+                </paper-material>
+              </section>
+              <section data-route="twitter">
+                <paper-material elevation="1" class="paper-font-body2">
+                  <p>
+                    <a class="twitter-timeline" href="https://twitter.com/jasonmastres" data-widget-id="541485085149892608" data-chrome="noheader nofooter noborders noscrollbar transparent">Tweets by @jasonmastres
+                    </a>
+                    <script>!function(d,s,id){
+                        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+                        if(!d.getElementById(id)){
+                          js=d.createElement(s);
+                          js.id=id;
+                          js.src=p+"://platform.twitter.com/widgets.js";
+                          fjs.parentNode.insertBefore(js,fjs);
+                        }
+                      }
+                      (document,"script","twitter-wjs");
+                    </script>
+                  </p>
+                </paper-material>
+              </section>
+              <section data-route="control" >
+             
+               <paper-material>
+<iframe src="free.html" width="950" height="600" frameborder="0" ></iframe>
+</paper-material>
+              </section>
+            </iron-pages>
+          </div>
+        </paper-scroll-header-panel>
+      </paper-drawer-panel>
+      <paper-toast id="toast">
+        <span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">Ok
+        </span>
+      </paper-toast>
+    </template>
+    <script src="scripts/app.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script type="text/javascript" src="http://pubnub.github.io/eon/v/eon/0.0.10/eon.js"></script>
+<link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/v/eon/0.0.10/eon.css">
+  </body>
+</html>
