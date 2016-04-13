@@ -1,0 +1,22 @@
+Channel ID:	18675
+Author:	arangates@gmail.com
+Access:	Public
+Channel DEscription:
+This channel updates information about the DC motor.The values from the temperature sensor,speed sensor and the current sensor are read using Arduino Uno and these values are streamed via thingspeak API to the front-end Freeboard.Simply ,its Remote Monitoring of Induction Motor
+Field 4 Voltage
+
+Field 5 Current
+
+Field 6 Speed
+
+Field 7 Temperature
+
+
+
+write API key : ETWI0YZCDOHxxxx
+Read API key  : 45HGM2G7PIXxxxx
+example post :
+
+https://api.thingspeak.com/update.json?api_key=ETWI0YZCDOHZA6BN&field4=35&field5=98&field6=100&field7=87
+
+

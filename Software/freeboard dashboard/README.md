@@ -1,0 +1,1 @@
+Import this JSON file from http://freeboard.github.io/freeboard/ using Load freeboard option
