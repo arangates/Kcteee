@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-*KCTEEE
+#KCTEEE
 
 An integrated motor monitoring system which collects data from 3-phase Induction motor  and stores data in thingspeak.com.
 
@@ -18,8 +17,5 @@ Components USED :
 5.ESP8266 -WiFi module 
 6.Arduino Uno
 
-=======
-#KCTEEE
-Induction motor being the workhorse of industries is a crucial part of any production lines ,so remote monitoring the parameters of motor such as voltage,current,speed and Temperature allows one to monitor the condition of motor from anywhere 
-in the world and also we can switch on/off the motor manually ,if required 
->>>>>>> e7c460b170f39af225cbf1e7d09693e88c02b4d5
+
+
