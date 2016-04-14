@@ -18,7 +18,7 @@ def doit():
 	f= random.randint(5,27) #c3
 
 	#speed
-	g= random.randint(16, 20) 
+	g= random.randint(1100,1200) 
 
 	#temperature
 	h= random.randint(38, 40) 
